@@ -1,11 +1,7 @@
 <?php
 
-function loadRemoteImage($url){
-    $filePath = tempnam(sys_get_temp_dir(), "IMG_");
-    $data = file_get_contents($url);
-    file_put_contents($filePath, $data);
-
-    $type = exif_imagetype($filePath);
+function loadImage($filePath){
+	$type = exif_imagetype($filePath);
     switch ($type){
         case 1:
             return imageCreateFromGif($filePath);
@@ -18,6 +14,14 @@ function loadRemoteImage($url){
         default:
             return null;
     }
+}
+
+function loadRemoteImage($url){
+    $filePath = tempnam(sys_get_temp_dir(), "IMG_");
+    $data = file_get_contents($url);
+    file_put_contents($filePath, $data);
+
+    return loadImage($filePath);
 }
 
 function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAlpha, $colour = 0){
