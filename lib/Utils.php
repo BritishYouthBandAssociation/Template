@@ -73,16 +73,17 @@ function fitImageToCanvas($image, $canvas){
 
 	if($w >= $h){
 		$multiplier = $h / $canvasH;
-		$srcX = $w / 4;
-		$srcY = 0;
+		$resizeDir = 1;
 	} else {
 		$multiplier = $w / $canvasW;
-		$srcX = 0;
-		$srcY = $h / 4;
+		$resizeDir = 2;
 	}
 
 	$targetW = $w / $multiplier;
 	$targetH = $h / $multiplier;
+
+	$srcX = ($resizeDir == 1 && $targetW > ($canvasW * 1.5)) ? $w / 4 : 0;
+	$srcY = ($resizeDir == 2 && $targetH > ($canvasH * 1.5)) ? $h / 4 : 0;
 
 	imagecopyresized($canvas, $image, 0, 0, round($srcX), round($srcY), round($targetW), round($targetH), $w, $h);
 }
