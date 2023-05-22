@@ -10,14 +10,20 @@ class InstagramNewsTemplate{
 		"text" => ResourceTypes::WRAPPED_STRING
 	);
 
+	private $config;
+
+	public function __construct($config){
+		$this->config = $config;
+	}
+
 	public function parseParams(){		
 		foreach($this->params as $param => $type){
 			if($type == ResourceTypes::IMAGE){
 				$image = null;
 				if(isset($_FILES[$param])){
 					$image = loadImage($_FILES[$param]['tmp_name']);
-				} else if(isset($_GET[$param])) {
-					$image = loadRemoteImage($_GET[$param]);
+				} else if(isset($_REQUEST[$param])) {
+					$image = loadRemoteImage($_REQUEST[$param]);
 				}
 
 				if($image == null){
@@ -25,6 +31,12 @@ class InstagramNewsTemplate{
 				}
 
 				$this->params[$param] = $image;
+			} else if($type == ResourceTypes::WRAPPED_STRING){
+				if(!isset($_REQUEST[$param])){
+					throw new Exception("Failed to process parameter '$param'");
+				}
+
+				$this->params[$param] = wordwrap($_REQUEST[$param], $this->config->wordwrapLength, "\n");
 			} else {
 				$this->params[$param] = $_GET[$param];
 			}

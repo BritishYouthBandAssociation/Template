@@ -6,14 +6,14 @@ error_reporting(E_ALL);
 
 require_once("../lib/Utils.php");
 require_once("../lib/Template/InstagramNewsTemplate.php");
+require_once("../lib/Config.php");
 
-$wrapLength = isset($_GET['wrap']) ? $_GET['wrap'] : 16;
-$text = wordwrap(strtoupper($_GET['text']), $wrapLength, "\n");
+$config = Config::load();
 
-$template = new InstagramNewsTemplate();
+$template = new InstagramNewsTemplate($config);
 $template->parseParams();
 
-$canvas = $template->render();
+$image = $template->render();
 
 header("Content-Type: image/png");
-imagepng($canvas);
+imagepng($image);
