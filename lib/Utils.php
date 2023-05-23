@@ -1,5 +1,7 @@
 <?php
 
+require_once("Alignment.php");
+
 function loadImage($filePath){
 	$type = exif_imagetype($filePath);
     switch ($type){
@@ -65,7 +67,20 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
     }
 }
 
-function fitImageToCanvas($image, $canvas){
+function calculateAlignment($alignment, $size, $canvasSize){
+	if($alignment == Alignment::START){
+		return 0;
+	}
+
+	if($alignment == Alignment::CENTER){ //center
+		return $size / 4;
+	}
+
+	//end
+	return $size - $canvasSize;
+}
+
+function fitImageToCanvas($image, $canvas, $alignment = Alignment::CENTER){
 	$w = imagesx($image);
 	$h = imagesy($image);
 	$canvasW = imagesx($canvas);
@@ -82,8 +97,8 @@ function fitImageToCanvas($image, $canvas){
 	$targetW = $w / $multiplier;
 	$targetH = $h / $multiplier;
 
-	$srcX = ($resizeDir == 1) ? $w / 4 : 0;
-	$srcY = ($resizeDir == 2) ? $h / 4 : 0;
+	$srcX = ($resizeDir == 1) ? calculateAlignment($alignment, $w, $canvasW * $multiplier) : 0;
+	$srcY = ($resizeDir == 2) ? calculateAlignment($alignment, $h, $canvasH * $multiplier) : 0;
 
 	imagecopyresized($canvas, $image, 0, 0, round($srcX), round($srcY), round($targetW), round($targetH), $w, $h);
 }
