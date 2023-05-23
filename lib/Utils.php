@@ -42,10 +42,10 @@ function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAl
     }
 }
 
-function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height){
+function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100){
     $lines = explode("\n", $text);
-    $fontSize = $height / (count($lines) * 1.5);
-    $res = imagettfbbox($fontSize, 0, $font, $text);
+    $fontSize = min($height / (count($lines) * 1.5), $maxSize);
+    $res = imagettfbbox($fontSize, 0, $font, $lines[0]);
 
     if($res[4] > $width){
         $scale = $width / $res[4];
