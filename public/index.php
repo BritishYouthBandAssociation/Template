@@ -23,6 +23,10 @@ header("Content-Type: image/png");
 imagepng($image);
 
 function resolveTemplate($config){
+	if(!isset($_GET['template'])){
+		die("Missing template");
+	}
+
 	$rawTemplate = $_GET['template'] . "Template.php";
 	$fileName = null;
 	$files = scandir(TEMPLATE_PATH);
