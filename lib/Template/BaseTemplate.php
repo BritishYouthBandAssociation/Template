@@ -17,8 +17,8 @@ abstract class BaseTemplate {
 			$val = null;
 			if($type == ResourceTypes::IMAGE){
 				$val = $this->getImageParam($param);
-			} else if($type == ResourceTypes::WRAPPED_STRING){
-				$val = $this->getWrappedTextParam($param);
+			} else if($type == ResourceTypes::WRAPPED_STRING || $type == ResourceTypes::STRING){
+				$val = $this->getTextParam($param);
 			}
 
 			if($val == null){
@@ -39,12 +39,12 @@ abstract class BaseTemplate {
 		return null;
 	}
 
-	private function getWrappedTextParam($param){
+	private function getTextParam($param){
 		if(!isset($_REQUEST[$param])){
 			return null;
 		}
 
-		if($this->config->wordwrapType == WrapType::NEVER){
+		if($this->config->wordwrapType == WrapType::NEVER || ($this->config->wordwrapType == WrapType::WRAPPED_ONLY && $this->params[$param] != ResourceTypes::WRAPPED_STRING)){
 			return $_REQUEST[$param];
 		}
 
