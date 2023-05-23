@@ -3,7 +3,7 @@
 require_once("BaseTemplate.php");
 require_once(__DIR__ . "/../ResourceTypes.php");
 
-class InstagramNewsTemplate extends BaseTemplate {
+class SquareNewsTemplate extends BaseTemplate {
 	const TARGET_SIZE = 1000;
 
 	protected $params = array(
