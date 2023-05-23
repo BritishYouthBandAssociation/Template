@@ -66,12 +66,12 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
 }
 
 function fitImageToCanvas($image, $canvas){
-	$canvasW = imagesx($canvas);
-	$canvasH = imagesy($canvas);
 	$w = imagesx($image);
 	$h = imagesy($image);
+	$canvasW = imagesx($canvas);
+	$canvasH = imagesy($canvas);
 
-	if($w >= $h){
+	if($canvasH >= $canvasW){
 		$multiplier = $h / $canvasH;
 		$resizeDir = 1;
 	} else {
@@ -82,8 +82,8 @@ function fitImageToCanvas($image, $canvas){
 	$targetW = $w / $multiplier;
 	$targetH = $h / $multiplier;
 
-	$srcX = ($resizeDir == 1 && $targetW > ($canvasW * 1.5)) ? $w / 4 : 0;
-	$srcY = ($resizeDir == 2 && $targetH > ($canvasH * 1.5)) ? $h / 4 : 0;
+	$srcX = ($resizeDir == 1) ? $w / 4 : 0;
+	$srcY = ($resizeDir == 2) ? $h / 4 : 0;
 
 	imagecopyresized($canvas, $image, 0, 0, round($srcX), round($srcY), round($targetW), round($targetH), $w, $h);
 }
