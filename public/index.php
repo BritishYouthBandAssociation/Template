@@ -10,11 +10,14 @@ require_once("../lib/Utils.php");
 require_once("../lib/Config.php");
 
 $config = Config::load();
-
 $template = resolveTemplate($config);
-$template->parseParams();
 
-$image = $template->render();
+try{
+	$template->parseParams();
+	$image = $template->render();
+} catch (Exception $e){
+	die("An error occurred whilst generating the requested template.");
+}
 
 header("Content-Type: image/png");
 imagepng($image);
