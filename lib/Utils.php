@@ -72,7 +72,7 @@ function calculateAlignment($alignment, $size, $canvasSize){
 		return 0;
 	}
 
-	if($alignment == Alignment::CENTER){ //center
+	if($alignment == Alignment::CENTER){
 		return $size / 4;
 	}
 
