@@ -44,6 +44,10 @@ abstract class BaseTemplate {
 			return null;
 		}
 
+		if($this->config->wordwrapType == WrapType::NEVER){
+			return $_REQUEST[$param];
+		}
+
 		return wordwrap($_REQUEST[$param], $this->config->wordwrapLength, "\n");
 	}
 }

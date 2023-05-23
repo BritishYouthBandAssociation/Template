@@ -42,7 +42,7 @@ function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAl
 
 function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height){
     $lines = explode("\n", $text);
-    $fontSize = 100;
+    $fontSize = $height / (count($lines) * 1.5);
     $res = imagettfbbox($fontSize, 0, $font, $text);
 
     if($res[4] > $width){
@@ -86,4 +86,12 @@ function fitImageToCanvas($image, $canvas){
 	$srcY = ($resizeDir == 2 && $targetH > ($canvasH * 1.5)) ? $h / 4 : 0;
 
 	imagecopyresized($canvas, $image, 0, 0, round($srcX), round($srcY), round($targetW), round($targetH), $w, $h);
+}
+
+function toBool($val){
+	if(strtolower($val) == "false"){
+		return false;
+	}
+
+	return !!$val;
 }
