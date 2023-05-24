@@ -62,16 +62,51 @@ function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAl
     }
 }
 
-function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100){
-    $lines = explode("\n", $text);
-    $fontSize = min($height / (count($lines) * 1.5), $maxSize);
-    $res = imagettfbbox($fontSize, 0, $font, $lines[0]);
-
-    if($res[4] > $width){
-        $scale = $width / $res[4];
-        $fontSize = round(($fontSize * $scale)) - 10;
+function wrap($fontSize, $angle, $fontFace, $string, $width){
+    
+    $ret = "";
+    
+    $arr = explode(' ', $string);
+    
+    foreach ( $arr as $word ){
+    
+        $teststring = $ret.' '.$word;
+        $testbox = imagettfbbox($fontSize, $angle, $fontFace, $teststring);
+        if ( $testbox[2] > $width ){
+            $ret.=($ret==""?"":"\n").$word;
+        } else {
+            $ret.=($ret==""?"":' ').$word;
+        }
     }
+    
+    return $ret;
+}
 
+function calculateFontSize($text, $font, $width, $height){
+	$charsToFit = strlen($text);
+	$size = 100;
+
+	while(true){
+		$bounds = imagettfbbox($size, 0, $font, $text);
+		$calcWidth = $bounds[2] - $bounds[0];
+		$calcHeight = $bounds[1] - $bounds[7];
+
+		if($bounds[2] <= $width){
+			return $size;
+		}
+
+		$rows = ($height / $calcHeight) / 1.5;
+		if($calcWidth / $rows <= $width){
+			return $size;
+		}
+
+		$size *= 0.98;
+	}
+}
+
+function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100){
+	$fontSize = calculateFontSize($text, $font, $width, $height);
+	$lines = explode("\n", wrap($fontSize, 0, $font, $text, $width));
     $yOffset = 0;
 
     foreach($lines as $line){
@@ -83,12 +118,12 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
         $centerY = ($height / 2) - ($textHeight / 2);
 
         imagettftext($image, $fontSize, 0, round($x + $centerX), round($y + $centerY - $yOffset), $colour, $font, $line);
-        $yOffset += $textHeight * 1.5;
+        $yOffset += $textHeight * 1.3;
     }
 }
 
 function calculateAlignment($alignment, $size, $canvasSize){
-	if($size == $canvasSize){
+	if($size <= $canvasSize){
 		return 0;
 	}
 
@@ -101,7 +136,7 @@ function calculateAlignment($alignment, $size, $canvasSize){
 	}
 
 	//end
-	return $size - $canvasSize;
+	return max(0, $size - $canvasSize);
 }
 
 function fitImageToCanvas($image, $canvas, $alignment = Alignment::CENTER){

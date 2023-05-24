@@ -12,12 +12,12 @@ require_once("../lib/Config.php");
 $config = Config::load();
 $template = resolveTemplate($config);
 
-try{
+//try{
 	$template->parseParams();
 	$image = $template->render();
-} catch (Exception $e){
-	die("An error occurred whilst generating the requested template.");
-}
+//} catch (Exception $e){
+//	die("An error occurred whilst generating the requested template.");
+//}
 
 header("Content-Type: image/png");
 imagepng($image);

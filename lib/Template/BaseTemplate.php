@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__ . "/../ResourceTypes.php");
+require_once(__DIR__ . "/../Utils.php");
 
 abstract class BaseTemplate {
 	abstract public function render();
@@ -17,7 +18,7 @@ abstract class BaseTemplate {
 			$val = null;
 			if($type == ResourceTypes::IMAGE){
 				$val = $this->getImageParam($param);
-			} else if($type == ResourceTypes::WRAPPED_STRING || $type == ResourceTypes::STRING){
+			} else if($type == ResourceTypes::STRING){
 				$val = $this->getTextParam($param);
 			}
 
@@ -44,10 +45,6 @@ abstract class BaseTemplate {
 			return null;
 		}
 
-		if($this->config->wordwrapType == WrapType::NEVER || ($this->config->wordwrapType == WrapType::WRAPPED_ONLY && $this->params[$param] != ResourceTypes::WRAPPED_STRING)){
-			return $_REQUEST[$param];
-		}
-
-		return wordwrap($_REQUEST[$param], $this->config->wordwrapLength, "\n");
+		return $_REQUEST[$param];
 	}
 }
