@@ -63,9 +63,7 @@ function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAl
 }
 
 function wrap($fontSize, $angle, $fontFace, $string, $width){
-    
     $ret = "";
-    
     $arr = explode(' ', $string);
     
     foreach ( $arr as $word ){
@@ -95,7 +93,7 @@ function calculateFontSize($text, $font, $width, $height){
 			return $size;
 		}
 
-		$rows = ($height / $calcHeight) / 1.5;
+		$rows = ($height / $calcHeight) / 1.6;
 		if($calcWidth / $rows <= $width){
 			return $size;
 		}
@@ -107,18 +105,18 @@ function calculateFontSize($text, $font, $width, $height){
 function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100){
 	$fontSize = calculateFontSize($text, $font, $width, $height);
 	$lines = explode("\n", wrap($fontSize, 0, $font, $text, $width));
-    $yOffset = 0;
+    $yOffset = $fontSize;
 
     foreach($lines as $line){
         $res = imagettfbbox($fontSize, 0, $font, $line);
         $textWidth = $res[2] - $res[0];
-        $textHeight = $res[7] - $res[1];
+        $textHeight = $res[1] - $res[7];
 
         $centerX = ($width / 2) - ($textWidth / 2);
-        $centerY = ($height / 2) - ($textHeight / 2);
+        $centerY = 0;
 
-        imagettftext($image, $fontSize, 0, round($x + $centerX), round($y + $centerY - $yOffset), $colour, $font, $line);
-        $yOffset += $textHeight * 1.3;
+        imagettftext($image, $fontSize, 0, round($x + $centerX), round($y + $centerY + $yOffset), $colour, $font, $line);
+        $yOffset += $textHeight * 1.5;
     }
 }
 
