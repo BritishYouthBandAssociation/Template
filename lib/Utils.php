@@ -23,6 +23,15 @@ function makeRequest($url){
 	curl_setopt($curl, CURLOPT_URL, $url);
 	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+	if(defined('CURL_PORT')){
+		curl_setopt($curl, CURLOPT_LOCALPORT, CURL_PORT);
+	}
+
+	if(defined('CURL_RANGE')){
+		curl_setopt($curl, CURLOPT_LOCALPORTRANGE, CURL_RANGE);
+	}
+
 	$res = curl_exec($curl);
 
 	if($res === FALSE){
@@ -95,7 +104,11 @@ function calculateFontSize($text, $font, $width, $height){
 
 		$rows = ($height / $calcHeight) / 1.6;
 		if($calcWidth / $rows <= $width){
-			return $size;
+			$actualRows = count(explode("\n", wrap($size, 0, $font, $text, $width)));
+
+			if($actualRows <= $rows){
+				return $size;
+			}
 		}
 
 		$size *= 0.98;
