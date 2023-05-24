@@ -13,6 +13,8 @@ function loadImage($filePath){
             return imageCreateFromPng($filePath);
         case 6:
             return imageCreateFromBmp($filePath);
+		case 18:
+			return imageCreateFromWebp($filePath);
         default:
             return null;
     }
