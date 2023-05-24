@@ -145,7 +145,7 @@ function fitImageToCanvas($image, $canvas, $alignment = Alignment::CENTER){
 	$canvasW = imagesx($canvas);
 	$canvasH = imagesy($canvas);
 
-	if($canvasH >= $canvasW){
+	if($w >= $h){
 		$multiplier = $h / $canvasH;
 		$resizeDir = 1;
 	} else {

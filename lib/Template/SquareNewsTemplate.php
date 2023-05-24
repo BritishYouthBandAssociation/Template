@@ -8,7 +8,7 @@ class SquareNewsTemplate extends BaseTemplate {
 
 	protected $params = array(
 		"image" => ResourceTypes::IMAGE,
-		"text" => ResourceTypes::WRAPPED_STRING
+		"text" => ResourceTypes::STRING
 	);
 
 	public function render(){
