@@ -45,6 +45,6 @@ abstract class BaseTemplate {
 			return null;
 		}
 
-		return $_REQUEST[$param];
+		return trim($_REQUEST[$param]);
 	}
 }
