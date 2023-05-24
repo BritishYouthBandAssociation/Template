@@ -1,9 +1,5 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 define("TEMPLATE_PATH", __DIR__ . "/../lib/Template/");
 
 require_once("../lib/Utils.php");
@@ -12,12 +8,12 @@ require_once("../lib/Config.php");
 $config = Config::load();
 $template = resolveTemplate($config);
 
-//try{
+try{
 	$template->parseParams();
 	$image = $template->render();
-//} catch (Exception $e){
-//	die("An error occurred whilst generating the requested template.");
-//}
+} catch (Exception $e){
+	die("An error occurred whilst generating the requested template.");
+}
 
 header("Content-Type: image/png");
 imagepng($image);
