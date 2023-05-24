@@ -18,9 +18,29 @@ function loadImage($filePath){
     }
 }
 
+function makeRequest($url){
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	$res = curl_exec($curl);
+
+	if($res === FALSE){
+		$res = null;
+	}
+
+	curl_close($curl);
+
+	return $res;
+}
+
 function loadRemoteImage($url){
+	$data = makeRequest($url);
+	if($data == null){
+		return null;
+	}
+
     $filePath = tempnam(sys_get_temp_dir(), "IMG_");
-    $data = file_get_contents($url);
     file_put_contents($filePath, $data);
 
     return loadImage($filePath);
