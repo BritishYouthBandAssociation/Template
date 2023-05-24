@@ -120,6 +120,12 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
 	$lines = explode("\n", wrap($fontSize, 0, $font, $text, $width));
     $yOffset = $fontSize;
 
+	$expectedRows = $height / ($fontSize * 1.5);
+	if($expectedRows > count($lines)){
+		$missingRows = $expectedRows - count($lines);
+		$yOffset += $missingRows * $fontSize;
+	}
+
     foreach($lines as $line){
         $res = imagettfbbox($fontSize, 0, $font, $line);
         $textWidth = $res[2] - $res[0];
