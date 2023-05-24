@@ -88,6 +88,10 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
 }
 
 function calculateAlignment($alignment, $size, $canvasSize){
+	if($size == $canvasSize){
+		return 0;
+	}
+
 	if($alignment == Alignment::START){
 		return 0;
 	}
