@@ -142,16 +142,12 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
 }
 
 function calculateAlignment($alignment, $size, $canvasSize){
-	if($size <= $canvasSize){
-		return 0;
-	}
-
 	if($alignment == Alignment::START){
 		return 0;
 	}
 
 	if($alignment == Alignment::CENTER){
-		return $size / 4;
+		return ($size - $canvasSize) / 2;
 	}
 
 	//end
@@ -159,26 +155,27 @@ function calculateAlignment($alignment, $size, $canvasSize){
 }
 
 function fitImageToCanvas($image, $canvas, $alignment = Alignment::CENTER){
-	$w = imagesx($image);
+	$w = imagesx($image); 
 	$h = imagesy($image);
-	$canvasW = imagesx($canvas);
+	$aspect = $w / $h;
+
+	$canvasW = imagesx($canvas); 
 	$canvasH = imagesy($canvas);
+	$canvasAspect = $canvasW / $canvasH;
 
-	if($w >= $h){
-		$multiplier = $h / $canvasH;
-		$resizeDir = 1;
+	if ($aspect >= $canvasAspect) {
+    	$targetH = $h; 
+    	$targetW = ceil(($targetH * $canvasW) / $canvasH);
+    	$srcX = calculateAlignment($alignment, $w, $targetW);
+    	$srcY = 0;
 	} else {
-		$multiplier = $w / $canvasW;
-		$resizeDir = 2;
+	    $targetW = $w; 
+	    $targetH = ceil(($targetW * $canvasH) / $canvasW);
+	    $srcX = 0;
+	    $srcY = calculateAlignment($alignment, $h, $targetH);
 	}
-
-	$targetW = $w / $multiplier;
-	$targetH = $h / $multiplier;
-
-	$srcX = ($resizeDir == 1) ? calculateAlignment($alignment, $w, $canvasW * $multiplier) : 0;
-	$srcY = ($resizeDir == 2) ? calculateAlignment($alignment, $h, $canvasH * $multiplier) : 0;
-
-	imagecopyresized($canvas, $image, 0, 0, round($srcX), round($srcY), round($targetW), round($targetH), $w, $h);
+	
+	imagecopyresampled($canvas, $image, 0, 0, $srcX, $srcY, $canvasW, $canvasH, $targetW, $targetH);
 }
 
 function toBool($val){
