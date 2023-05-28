@@ -30,6 +30,10 @@ abstract class BaseTemplate {
 		}
 	}
 
+	protected function getFont($font){
+		return $this->config->fontDir . $font;
+	}
+
 	private function getImageParam($param){
 		if(isset($_FILES[$param])){
 			return loadImage($_FILES[$param]['tmp_name']);

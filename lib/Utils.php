@@ -57,10 +57,21 @@ function loadRemoteImage($url){
     return loadImage($filePath);
 }
 
-function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAlpha, $colour = 0){
-    $r = ($colour & 0xFF0000) >> 16;
+function hex2rgb($colour){
+	$r = ($colour & 0xFF0000) >> 16;
     $g = ($colour & 0x00FF00) >> 8;
     $b = ($colour & 0x0000FF);
+
+	return [$r, $g, $b];
+}
+
+function hex2imageColour($colour, $image){
+	[$r, $g, $b] = hex2rgb($colour);
+	return imagecolorallocate($image, $r, $g, $b);
+}
+
+function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAlpha, $colour = 0){
+    [$r, $g, $b] = hex2rgb($colour);
 
     $alphaStep = ($endAlpha - $startAlpha) / ($bottom - $top);
     $alpha = $startAlpha;
@@ -100,7 +111,7 @@ function calculateFontSize($text, $font, $width, $height){
 		$calcWidth = $bounds[2] - $bounds[0];
 		$calcHeight = $bounds[1] - $bounds[7];
 
-		if($bounds[2] <= $width){
+		if($calcWidth <= $width && $calcHeight <= $height){
 			return $size;
 		}
 
@@ -155,12 +166,17 @@ function calculateAlignment($alignment, $size, $canvasSize){
 }
 
 function fitImageToCanvas($image, $canvas, $alignment = Alignment::CENTER){
+	$canvasW = imagesx($canvas); 
+	$canvasH = imagesy($canvas);
+
+	fitImageToSpace($image, $canvas, 0, 0, $canvasW, $canvasH, $alignment);
+}
+
+function fitImageToSpace($image, $canvas, $canvasX, $canvasY, $canvasW, $canvasH, $alignment = Alignment::CENTER){
 	$w = imagesx($image); 
 	$h = imagesy($image);
 	$aspect = $w / $h;
 
-	$canvasW = imagesx($canvas); 
-	$canvasH = imagesy($canvas);
 	$canvasAspect = $canvasW / $canvasH;
 
 	if ($aspect >= $canvasAspect) {
@@ -174,8 +190,8 @@ function fitImageToCanvas($image, $canvas, $alignment = Alignment::CENTER){
 	    $srcX = 0;
 	    $srcY = calculateAlignment($alignment, $h, $targetH);
 	}
-	
-	imagecopyresampled($canvas, $image, 0, 0, $srcX, $srcY, $canvasW, $canvasH, $targetW, $targetH);
+
+	imagecopyresampled($canvas, $image, $canvasX, $canvasY, $srcX, $srcY, $canvasW, $canvasH, $targetW, $targetH);
 }
 
 function toBool($val){
