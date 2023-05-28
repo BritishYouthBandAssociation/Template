@@ -23,7 +23,8 @@ abstract class BaseTemplate {
 		$this->canvas = imagecreatetruecolor(static::WIDTH, static::HEIGHT);
 		$this->colours = array(
 			"primary" => hex2imageColour($this->config->colourPrimary, $this->canvas),
-			"onPrimary" => hex2imageColour($this->config->colourOnPrimary, $this->canvas)
+			"onPrimary" => hex2imageColour($this->config->colourOnPrimary, $this->canvas),
+			"highlight" => hex2imageColour($this->config->colourHighlight, $this->canvas)
 		);
 		$this->fonts = array(
 			"title" => $this->getFont("asket.ttf")

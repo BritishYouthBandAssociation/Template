@@ -11,10 +11,13 @@ class Config{
 
 	public readonly int $colourPrimary;
 	public readonly int $colourOnPrimary;
+	public readonly int $colourHighlight;
 
 	public function __construct(){
 		$this->colourPrimary = 0x282360;
 		$this->colourOnPrimary = 0xFFFFFF;
+
+		$this->colourHighlight = 0xFF0000;
 
 		$this->fontDir = __DIR__ . "/../assets/font/";
 		$this->imageDir = __DIR__ . "/../assets/image/";

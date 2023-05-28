@@ -17,6 +17,7 @@ class PortraitNewsTemplate extends BaseTemplate {
 	public function render(){
 		imagefill($this->canvas, 0, 0, $this->colours["primary"]);
 		fitImageToSpace($this->params["image"], $this->canvas, 0, 0, self::WIDTH, self::HEIGHT * 0.4);
+		imagefilledrectangle($this->canvas, 0, self::HEIGHT * 0.4, self::WIDTH, self::HEIGHT * 0.41, $this->colours["highlight"]);
 
 		writeCenteredTtfText($this->canvas, $this->fonts["title"], strtoupper($this->params["title"]), $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.45, self::WIDTH * (1 - (self::PADDING_X * 2)), self::HEIGHT * 0.25);
 		writeCenteredTtfText($this->canvas, $this->fonts["title"], "BYBA.ONLINE", $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.75, self::WIDTH * (1 - (self::PADDING_X * 2)), 24);
