@@ -12,13 +12,13 @@ $template = resolveTemplate($config);
 
 try{
 	$template->parseParams();
-	$image = $template->render();
+	$template->render();
 } catch (Exception $e){
 	die("An error occurred whilst generating the requested template.");
 }
 
 header("Content-Type: image/png");
-imagepng($image);
+imagepng($template->canvas);
 
 function resolveTemplate($config){
 	if(!isset($_GET['template'])){

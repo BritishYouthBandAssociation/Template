@@ -9,8 +9,25 @@ abstract class BaseTemplate {
 	protected $config;
 	protected $params;
 
+	public $canvas = null;
+	protected $colours;
+	protected $fonts;
+
+	const WIDTH = 0;
+	const HEIGHT = 0;
+
 	public function __construct($config){
 		$this->config = $config;
+
+		//set up some defaults
+		$this->canvas = imagecreatetruecolor(static::WIDTH, static::HEIGHT);
+		$this->colours = array(
+			"primary" => hex2imageColour($this->config->colourPrimary, $this->canvas),
+			"onPrimary" => hex2imageColour($this->config->colourOnPrimary, $this->canvas)
+		);
+		$this->fonts = array(
+			"title" => $this->getFont("asket.ttf")
+		);
 	}
 
 	public function parseParams(){		
