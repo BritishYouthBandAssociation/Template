@@ -4,7 +4,8 @@ require_once("BaseTemplate.php");
 require_once(__DIR__ . "/../ResourceTypes.php");
 
 class SquareNewsTemplate extends BaseTemplate {
-	const TARGET_SIZE = 1000;
+	const WIDTH = 1000;
+	const HEIGHT = 1000;
 
 	protected $params = array(
 		"image" => ResourceTypes::IMAGE,
@@ -12,12 +13,8 @@ class SquareNewsTemplate extends BaseTemplate {
 	);
 
 	public function render(){
-		$canvas = imagecreatetruecolor(self::TARGET_SIZE, self::TARGET_SIZE);
-
-		fitImageToCanvas($this->params["image"], $canvas);
-		alphaGradient($canvas, 0, self::TARGET_SIZE * 0.2, self::TARGET_SIZE, self::TARGET_SIZE, 127, 10, $this->config->brandingBlue);
-		writeCenteredTtfText($canvas, "../asket.ttf", strtoupper($this->params["text"]), imagecolorallocate($this->params["image"],255,255,255), self::TARGET_SIZE / 8, self::TARGET_SIZE * 0.75, self::TARGET_SIZE * 0.75, self::TARGET_SIZE * 0.2);
-
-		return $canvas;
+		fitImageToCanvas($this->params["image"], $this->canvas);
+		alphaGradient($this->canvas, 0, self::HEIGHT * 0.2, self::WIDTH, self::HEIGHT, 127, 10, $this->colours["primary"]);
+		writeCenteredTtfText($this->canvas, $this->fonts["title"], strtoupper($this->params["text"]), $this->colours["onPrimary"], self::WIDTH / 8, self::HEIGHT * 0.75, self::WIDTH * 0.75, self::HEIGHT * 0.2);
 	}
 }

@@ -12,8 +12,6 @@ class WordpressCoverTemplate extends BaseTemplate {
 	);
 
 	public function render(){
-		$canvas = imagecreatetruecolor(self::WIDTH, self::HEIGHT);
-		fitImageToCanvas($this->params["image"], $canvas);
-		return $canvas;
+		fitImageToCanvas($this->params["image"], $this->canvas);
 	}
 }
