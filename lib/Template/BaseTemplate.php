@@ -51,6 +51,10 @@ abstract class BaseTemplate {
 		return $this->config->fontDir . $font;
 	}
 
+	protected function getImage($image){
+		return loadImage($this->config->imageDir . $image);
+	}
+
 	private function getImageParam($param){
 		if(isset($_FILES[$param])){
 			return loadImage($_FILES[$param]['tmp_name']);

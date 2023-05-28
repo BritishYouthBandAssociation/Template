@@ -194,6 +194,26 @@ function fitImageToSpace($image, $canvas, $canvasX, $canvasY, $canvasW, $canvasH
 	imagecopyresampled($canvas, $image, $canvasX, $canvasY, $srcX, $srcY, $canvasW, $canvasH, $targetW, $targetH);
 }
 
+function containImageInSpace($image, $canvas, $canvasX, $canvasY, $canvasW, $canvasH){
+	$w = imagesx($image); 
+	$h = imagesy($image);
+	$aspect = $w / $h;
+
+	$canvasAspect = $canvasW / $canvasH;
+
+	if ($aspect >= $canvasAspect) {
+	    $canvasH = $canvasW * ($h / $w);
+	} else {
+    	$canvasW = $canvasH * ($w / $h);
+	}
+
+	imagecopyresampled($canvas, $image, $canvasX, $canvasY, 0, 0, $canvasW, $canvasH, $w, $h);
+}
+
+function dbgRect($img, $top, $left, $right, $bottom){
+	imagefilledrectangle($img, $top, $left, $right, $bottom, imagecolorallocatealpha($img, 255, 0, 0, 0.4));
+}
+
 function toBool($val){
 	if(strtolower($val) == "false"){
 		return false;

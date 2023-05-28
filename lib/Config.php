@@ -7,6 +7,7 @@ class Config{
 	public $wordwrapLength;
 
 	public readonly string $fontDir;
+	public readonly string $imageDir;
 
 	public readonly int $colourPrimary;
 	public readonly int $colourOnPrimary;
@@ -15,7 +16,8 @@ class Config{
 		$this->colourPrimary = 0x282360;
 		$this->colourOnPrimary = 0xFFFFFF;
 
-		$this->fontDir = "../assets/font/";
+		$this->fontDir = __DIR__ . "/../assets/font/";
+		$this->imageDir = __DIR__ . "/../assets/image/";
 	}
 
 	public static function load(){
