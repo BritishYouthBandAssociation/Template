@@ -6,10 +6,16 @@ class Config{
 	public $wordwrapType;
 	public $wordwrapLength;
 
-	public readonly int $brandingBlue;
+	public readonly string $fontDir;
+
+	public readonly int $colourPrimary;
+	public readonly int $colourOnPrimary;
 
 	public function __construct(){
-		$this->brandingBlue = 0x282360;
+		$this->colourPrimary = 0x282360;
+		$this->colourOnPrimary = 0xFFFFFF;
+
+		$this->fontDir = "../assets/font/";
 	}
 
 	public static function load(){
