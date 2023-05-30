@@ -18,12 +18,12 @@ class PortraitNewsTemplate extends BaseTemplate {
 	);
 
 	protected function fillDefaultParams(){
-		$this->params["version"] ??= 2;
+		$this->params["version"] ??= 3;
 		$this->params["subtitle"] ??= "";
 	}
 
 	protected function validateParams(){
-		if ($this->params["version"] > 2 || $this->params["version"] < 1) {
+		if ($this->params["version"] > 3 || $this->params["version"] < 1) {
 			return false;
 		}
 
@@ -37,11 +37,8 @@ class PortraitNewsTemplate extends BaseTemplate {
 			imagefilledrectangle($this->canvas, 0, self::HEIGHT * 0.4, self::WIDTH, self::HEIGHT * 0.41, $this->colours["highlight"]);
 
 			writeCenteredTtfText($this->canvas, $this->fonts["title"], strtoupper($this->params["title"]), $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.45, self::WIDTH * (1 - (self::PADDING_X * 2)), self::HEIGHT * 0.25);
-			writeCenteredTtfText($this->canvas, $this->fonts["title"], "BYBA.ONLINE", $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.75, self::WIDTH * (1 - (self::PADDING_X * 2)), 24);
-
-			$logo = $this->getImage("byba.png");
-			containImageInSpace($logo, $this->canvas, self::WIDTH * 0.4, self::HEIGHT * 0.85, self::WIDTH * 0.2, self::HEIGHT * 0.1);
-		} else {
+			writeCenteredTtfText($this->canvas, $this->fonts["subtitle"], $this->params["subtitle"], $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.75, self::WIDTH * (1 - (self::PADDING_X * 2)), self::HEIGHT * 0.025);
+		} else if($this->params["version"] == 2) {
 			$stripW = self::WIDTH * 0.1;
 			$stripCol = makeColourTransparent($this->canvas, $this->colours["primary"], 90);
 
@@ -54,6 +51,16 @@ class PortraitNewsTemplate extends BaseTemplate {
 
 			imagefilledrectangle($this->canvas, 0, 0, $stripW, self::HEIGHT * 0.2, $this->colours["primary"]);
 			imagefilledrectangle($this->canvas, 0, self::HEIGHT * 0.2, $stripW, self::HEIGHT, $stripCol);
+		} else if($this->params["version"] == 3){
+			imagefill($this->canvas, 0, 0, $this->colours["primary"]);
+			fitImageToSpace($this->params["image"], $this->canvas, 0, 0, self::WIDTH, self::HEIGHT * 0.4);
+			alphaGradient($this->canvas, 0, self::HEIGHT * 0.2, self::WIDTH, self::HEIGHT * 0.43, 127, 10, $this->colours["primary"]);
+
+			writeCenteredTtfText($this->canvas, $this->fonts["title"], strtoupper($this->params["title"]), $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.45, self::WIDTH * (1 - (self::PADDING_X * 2)), self::HEIGHT * 0.25);
+			writeCenteredTtfText($this->canvas, $this->fonts["subtitle"], $this->params["subtitle"], $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.75, self::WIDTH * (1 - (self::PADDING_X * 2)), self::HEIGHT * 0.025);
 		}
+
+		$logo = $this->getImage("byba.png");
+		containImageInSpace($logo, $this->canvas, self::WIDTH * 0.4, self::HEIGHT * 0.85, self::WIDTH * 0.2, self::HEIGHT * 0.1);
 	}
 }
