@@ -12,10 +12,15 @@ class Config{
 	public readonly int $colourPrimary;
 	public readonly int $colourOnPrimary;
 	public readonly int $colourHighlight;
+	public readonly int $colourLight;
+	public readonly int $colourDark;
 
 	public function __construct(){
+		$this->colourLight = 0xFFFFFF;
+		$this->colourDark = 0x222222;
+
 		$this->colourPrimary = 0x282360;
-		$this->colourOnPrimary = 0xFFFFFF;
+		$this->colourOnPrimary = $this->colourLight;
 
 		$this->colourHighlight = 0xFF0000;
 
