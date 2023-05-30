@@ -221,3 +221,21 @@ function toBool($val){
 
 	return !!$val;
 }
+
+function resolveType($types){
+	if(is_array($types)){
+		$val = 0;
+		foreach($types as $type){
+			$val = $val | $type->value;
+		}
+
+		return $val;
+	}
+	
+	return $types->value;
+}
+
+function makeColourTransparent($image, $colour, $transparency){
+	$rgb = imagecolorsforindex($image, $colour);
+	return imagecolorallocatealpha($image,  $rgb["red"], $rgb["green"], $rgb["blue"], 127 - $transparency);
+}
