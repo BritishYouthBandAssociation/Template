@@ -54,7 +54,7 @@ class PortraitNewsTemplate extends BaseTemplate {
 		} else if($this->params["version"] == 3){
 			imagefill($this->canvas, 0, 0, $this->colours["primary"]);
 			fitImageToSpace($this->params["image"], $this->canvas, 0, 0, self::WIDTH, self::HEIGHT * 0.4);
-			alphaGradient($this->canvas, 0, self::HEIGHT * 0.2, self::WIDTH, self::HEIGHT * 0.43, 127, 10, $this->colours["primary"]);
+			alphaGradient($this->canvas, 0, self::HEIGHT * 0.25, self::WIDTH, self::HEIGHT * 0.4, 127, 0, $this->colours["primary"]);
 
 			writeCenteredTtfText($this->canvas, $this->fonts["title"], strtoupper($this->params["title"]), $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.45, self::WIDTH * (1 - (self::PADDING_X * 2)), self::HEIGHT * 0.25);
 			writeCenteredTtfText($this->canvas, $this->fonts["subtitle"], $this->params["subtitle"], $this->colours["onPrimary"], self::WIDTH * self::PADDING_X, self::HEIGHT * 0.75, self::WIDTH * (1 - (self::PADDING_X * 2)), self::HEIGHT * 0.025);
