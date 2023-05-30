@@ -24,28 +24,47 @@ abstract class BaseTemplate {
 		$this->colours = array(
 			"primary" => hex2imageColour($this->config->colourPrimary, $this->canvas),
 			"onPrimary" => hex2imageColour($this->config->colourOnPrimary, $this->canvas),
-			"highlight" => hex2imageColour($this->config->colourHighlight, $this->canvas)
+			"highlight" => hex2imageColour($this->config->colourHighlight, $this->canvas),
+			"light" => hex2imageColour($this->config->colourLight, $this->canvas),
+			"dark" => hex2imageColour($this->config->colourDark, $this->canvas)
 		);
 		$this->fonts = array(
-			"title" => $this->getFont("asket.ttf")
+			"title" => $this->getFont("asket.ttf"),
+			"subtitle" => $this->getFont("open-sans.ttf")
 		);
 	}
 
 	public function parseParams(){		
-		foreach($this->params as $param => $type){
+		foreach($this->params as $param => $types){
+			$type = resolveType($types);
+
 			$val = null;
-			if($type == ResourceTypes::IMAGE){
+			if($type & ResourceTypes::IMAGE->value){
 				$val = $this->getImageParam($param);
-			} else if($type == ResourceTypes::STRING){
+			} else if($type & ResourceTypes::STRING->value){
 				$val = $this->getTextParam($param);
 			}
 
-			if($val == null){
+			if($val == null && !($type & ResourceTypes::OPTIONAL->value)){
 				throw new Exception("Failed to process parameter '$param'");
 			}
 
 			$this->params[$param] = $val;
 		}
+
+		$this->fillDefaultParams();
+
+		if(!$this->validateParams()){
+			throw new Exception("Failed to validate parameters");
+		}
+	}
+
+	protected function fillDefaultParams(){
+
+	}
+
+	protected function validateParams(){
+		return true;
 	}
 
 	protected function getFont($font){
