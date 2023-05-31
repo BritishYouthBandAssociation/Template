@@ -2,41 +2,41 @@
 
 require_once("Alignment.php");
 
-function loadImage($filePath){
+function loadImage($filePath) {
 	$type = exif_imagetype($filePath);
-    switch ($type){
-        case 1:
-            return imageCreateFromGif($filePath);
-        case 2:
-            return imageCreateFromJpeg($filePath);
-        case 3:
-            return imageCreateFromPng($filePath);
-        case 6:
-            return imageCreateFromBmp($filePath);
+	switch ($type) {
+		case 1:
+			return imageCreateFromGif($filePath);
+		case 2:
+			return imageCreateFromJpeg($filePath);
+		case 3:
+			return imageCreateFromPng($filePath);
+		case 6:
+			return imageCreateFromBmp($filePath);
 		case 18:
 			return imageCreateFromWebp($filePath);
-        default:
-            return null;
-    }
+		default:
+			return null;
+	}
 }
 
-function makeRequest($url){
+function makeRequest($url) {
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
 	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-	if(defined('CURL_PORT')){
+	if (defined('CURL_PORT')) {
 		curl_setopt($curl, CURLOPT_LOCALPORT, CURL_PORT);
 	}
 
-	if(defined('CURL_RANGE')){
+	if (defined('CURL_RANGE')) {
 		curl_setopt($curl, CURLOPT_LOCALPORTRANGE, CURL_RANGE);
 	}
 
 	$res = curl_exec($curl);
 
-	if($res === FALSE){
+	if ($res === FALSE) {
 		$res = null;
 	}
 
@@ -45,81 +45,80 @@ function makeRequest($url){
 	return $res;
 }
 
-function loadRemoteImage($url){
+function loadRemoteImage($url) {
 	$data = makeRequest($url);
-	if($data == null){
+	if ($data == null) {
 		return null;
 	}
 
-    $filePath = tempnam(sys_get_temp_dir(), "IMG_");
-    file_put_contents($filePath, $data);
+	$filePath = tempnam(sys_get_temp_dir(), "IMG_");
+	file_put_contents($filePath, $data);
 
-    return loadImage($filePath);
+	return loadImage($filePath);
 }
 
-function hex2rgb($colour){
+function hex2rgb($colour) {
 	$r = ($colour & 0xFF0000) >> 16;
-    $g = ($colour & 0x00FF00) >> 8;
-    $b = ($colour & 0x0000FF);
+	$g = ($colour & 0x00FF00) >> 8;
+	$b = ($colour & 0x0000FF);
 
 	return [$r, $g, $b];
 }
 
-function hex2imageColour($colour, $image){
+function hex2imageColour($colour, $image) {
 	[$r, $g, $b] = hex2rgb($colour);
 	return imagecolorallocate($image, $r, $g, $b);
 }
 
-function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAlpha, $colour = 0){
-    [$r, $g, $b] = hex2rgb($colour);
+function alphaGradient($image, $left, $top, $right, $bottom, $startAlpha, $endAlpha, $colour = 0) {
+	[$r, $g, $b] = hex2rgb($colour);
 
-    $alphaStep = ($endAlpha - $startAlpha) / ($bottom - $top);
-    $alpha = $startAlpha;
+	$alphaStep = ($endAlpha - $startAlpha) / ($bottom - $top);
+	$alpha = $startAlpha;
 
-    for($y = $top; $y < $bottom; $y++){
-        $col = imagecolorallocatealpha($image, $r, $g, $b, round($alpha));
-        imagefilledrectangle($image, $left, $y, $right, $y + 1, $col);
+	for ($y = $top; $y < $bottom; $y++) {
+		$col = imagecolorallocatealpha($image, $r, $g, $b, round($alpha));
+		imagefilledrectangle($image, $left, $y, $right, $y + 1, $col);
 
-        $alpha += $alphaStep;
-    }
+		$alpha += $alphaStep;
+	}
 }
 
-function wrap($fontSize, $angle, $fontFace, $string, $width){
-    $ret = "";
-    $arr = explode(' ', $string);
-    
-    foreach ( $arr as $word ){
-    
-        $teststring = $ret.' '.$word;
-        $testbox = imagettfbbox($fontSize, $angle, $fontFace, $teststring);
-        if ( $testbox[2] > $width ){
-            $ret.=($ret==""?"":"\n").$word;
-        } else {
-            $ret.=($ret==""?"":' ').$word;
-        }
-    }
-    
-    return $ret;
+function wrap($fontSize, $angle, $fontFace, $string, $width) {
+	$ret = "";
+	$arr = explode(' ', $string);
+
+	foreach ($arr as $word) {
+
+		$teststring = $ret . ' ' . $word;
+		$testbox = imagettfbbox($fontSize, $angle, $fontFace, $teststring);
+		if ($testbox[2] > $width) {
+			$ret .= ($ret == "" ? "" : "\n") . $word;
+		} else {
+			$ret .= ($ret == "" ? "" : ' ') . $word;
+		}
+	}
+
+	return $ret;
 }
 
-function calculateFontSize($text, $font, $width, $height){
-	$charsToFit = strlen($text);
+function calculateFontSize($text, $font, $width, $height) {
 	$size = 100;
 
-	while(true){
+	while (true) {
 		$bounds = imagettfbbox($size, 0, $font, $text);
 		$calcWidth = $bounds[2] - $bounds[0];
 		$calcHeight = $bounds[1] - $bounds[7];
 
-		if($calcWidth <= $width && $calcHeight <= $height){
+		if ($calcWidth <= $width && $calcHeight <= $height) {
 			return $size;
 		}
 
 		$rows = ($height / $calcHeight) / 1.6;
-		if($calcWidth / $rows <= $width){
+		if ($calcWidth / $rows <= $width) {
 			$actualRows = count(explode("\n", wrap($size, 0, $font, $text, $width)));
 
-			if($actualRows <= $rows){
+			if ($actualRows <= $rows) {
 				return $size;
 			}
 		}
@@ -128,36 +127,36 @@ function calculateFontSize($text, $font, $width, $height){
 	}
 }
 
-function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100){
+function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100) {
 	$fontSize = calculateFontSize($text, $font, $width, $height);
 	$lines = explode("\n", wrap($fontSize, 0, $font, $text, $width));
-    $yOffset = $fontSize;
+	$yOffset = $fontSize;
 
 	$expectedRows = $height / ($fontSize * 1.5);
-	if($expectedRows > count($lines)){
+	if ($expectedRows > count($lines)) {
 		$missingRows = $expectedRows - count($lines);
 		$yOffset += $missingRows * $fontSize;
 	}
 
-    foreach($lines as $line){
-        $res = imagettfbbox($fontSize, 0, $font, $line);
-        $textWidth = $res[2] - $res[0];
-        $textHeight = $res[1] - $res[7];
+	foreach ($lines as $line) {
+		$res = imagettfbbox($fontSize, 0, $font, $line);
+		$textWidth = $res[2] - $res[0];
+		$textHeight = $res[1] - $res[7];
 
-        $centerX = ($width / 2) - ($textWidth / 2);
-        $centerY = 0;
+		$centerX = ($width / 2) - ($textWidth / 2);
+		$centerY = 0;
 
-        imagettftext($image, $fontSize, 0, round($x + $centerX), round($y + $centerY + $yOffset), $colour, $font, $line);
-        $yOffset += $textHeight * 1.5;
-    }
+		imagettftext($image, $fontSize, 0, round($x + $centerX), round($y + $centerY + $yOffset), $colour, $font, $line);
+		$yOffset += $textHeight * 1.5;
+	}
 }
 
-function calculateAlignment($alignment, $size, $canvasSize){
-	if($alignment == Alignment::START){
+function calculateAlignment($alignment, $size, $canvasSize) {
+	if ($alignment == Alignment::START) {
 		return 0;
 	}
 
-	if($alignment == Alignment::CENTER){
+	if ($alignment == Alignment::CENTER) {
 		return ($size - $canvasSize) / 2;
 	}
 
@@ -165,77 +164,77 @@ function calculateAlignment($alignment, $size, $canvasSize){
 	return max(0, $size - $canvasSize);
 }
 
-function fitImageToCanvas($image, $canvas, $alignment = Alignment::CENTER){
-	$canvasW = imagesx($canvas); 
+function fitImageToCanvas($image, $canvas, $alignment = Alignment::CENTER) {
+	$canvasW = imagesx($canvas);
 	$canvasH = imagesy($canvas);
 
 	fitImageToSpace($image, $canvas, 0, 0, $canvasW, $canvasH, $alignment);
 }
 
-function fitImageToSpace($image, $canvas, $canvasX, $canvasY, $canvasW, $canvasH, $alignment = Alignment::CENTER){
-	$w = imagesx($image); 
+function fitImageToSpace($image, $canvas, $canvasX, $canvasY, $canvasW, $canvasH, $alignment = Alignment::CENTER) {
+	$w = imagesx($image);
 	$h = imagesy($image);
 	$aspect = $w / $h;
 
 	$canvasAspect = $canvasW / $canvasH;
 
 	if ($aspect >= $canvasAspect) {
-    	$targetH = $h; 
-    	$targetW = ceil(($targetH * $canvasW) / $canvasH);
-    	$srcX = calculateAlignment($alignment, $w, $targetW);
-    	$srcY = 0;
+		$targetH = $h;
+		$targetW = ceil(($targetH * $canvasW) / $canvasH);
+		$srcX = calculateAlignment($alignment, $w, $targetW);
+		$srcY = 0;
 	} else {
-	    $targetW = $w; 
-	    $targetH = ceil(($targetW * $canvasH) / $canvasW);
-	    $srcX = 0;
-	    $srcY = calculateAlignment($alignment, $h, $targetH);
+		$targetW = $w;
+		$targetH = ceil(($targetW * $canvasH) / $canvasW);
+		$srcX = 0;
+		$srcY = calculateAlignment($alignment, $h, $targetH);
 	}
 
 	imagecopyresampled($canvas, $image, $canvasX, $canvasY, $srcX, $srcY, $canvasW, $canvasH, $targetW, $targetH);
 }
 
-function containImageInSpace($image, $canvas, $canvasX, $canvasY, $canvasW, $canvasH){
-	$w = imagesx($image); 
+function containImageInSpace($image, $canvas, $canvasX, $canvasY, $canvasW, $canvasH) {
+	$w = imagesx($image);
 	$h = imagesy($image);
 	$aspect = $w / $h;
 
 	$canvasAspect = $canvasW / $canvasH;
 
 	if ($aspect >= $canvasAspect) {
-	    $canvasH = $canvasW * ($h / $w);
+		$canvasH = $canvasW * ($h / $w);
 	} else {
-    	$canvasW = $canvasH * ($w / $h);
+		$canvasW = $canvasH * ($w / $h);
 	}
 
 	imagecopyresampled($canvas, $image, $canvasX, $canvasY, 0, 0, $canvasW, $canvasH, $w, $h);
 }
 
-function dbgRect($img, $top, $left, $right, $bottom){
+function dbgRect($img, $top, $left, $right, $bottom) {
 	imagefilledrectangle($img, $top, $left, $right, $bottom, imagecolorallocatealpha($img, 255, 0, 0, 0.4));
 }
 
-function toBool($val){
-	if(strtolower($val) == "false"){
+function toBool($val) {
+	if (strtolower($val) == "false") {
 		return false;
 	}
 
 	return !!$val;
 }
 
-function resolveType($types){
-	if(is_array($types)){
+function resolveType($types) {
+	if (is_array($types)) {
 		$val = 0;
-		foreach($types as $type){
+		foreach ($types as $type) {
 			$val = $val | $type->value;
 		}
 
 		return $val;
 	}
-	
+
 	return $types->value;
 }
 
-function makeColourTransparent($image, $colour, $transparency){
+function makeColourTransparent($image, $colour, $transparency) {
 	$rgb = imagecolorsforindex($image, $colour);
 	return imagecolorallocatealpha($image,  $rgb["red"], $rgb["green"], $rgb["blue"], 127 - $transparency);
 }
