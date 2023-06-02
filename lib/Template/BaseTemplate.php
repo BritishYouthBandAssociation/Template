@@ -37,12 +37,13 @@ abstract class BaseTemplate {
 	public function parseParams(){		
 		foreach($this->params as $param => $types){
 			$type = resolveType($types);
+			$isArray = $type & ResourceTypes::ARRAY->value;
 
 			$val = null;
 			if($type & ResourceTypes::IMAGE->value){
-				$val = $this->getImageParam($param);
+				$val = $this->getImageParam($param, $isArray);
 			} else if($type & ResourceTypes::STRING->value){
-				$val = $this->getTextParam($param);
+				$val = $this->getTextParam($param, $isArray);
 			}
 
 			if($val == null && !($type & ResourceTypes::OPTIONAL->value)){
@@ -75,7 +76,7 @@ abstract class BaseTemplate {
 		return loadImage($this->config->imageDir . $image);
 	}
 
-	private function getImageParam($param){
+	private function getImageParam($param, $isArray = false){
 		if(isset($_FILES[$param])){
 			return loadImage($_FILES[$param]['tmp_name']);
 		} else if(isset($_REQUEST[$param])) {
@@ -85,11 +86,20 @@ abstract class BaseTemplate {
 		return null;
 	}
 
-	private function getTextParam($param){
+	private function getTextParam($param, $isArray = false){
 		if(!isset($_REQUEST[$param])){
 			return null;
 		}
 
-		return trim($_REQUEST[$param]);
+		if(!$isArray){
+			return trim($_REQUEST[$param]);
+		}
+
+		$data = [];
+		foreach($_REQUEST[$param] as $val){
+			$data[] = trim($val);
+		}
+
+		return $data;
 	}
 }

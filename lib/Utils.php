@@ -238,3 +238,53 @@ function makeColourTransparent($image, $colour, $transparency) {
 	$rgb = imagecolorsforindex($image, $colour);
 	return imagecolorallocatealpha($image,  $rgb["red"], $rgb["green"], $rgb["blue"], 127 - $transparency);
 }
+
+function strokedOutline($image, $size, $x, $y, $strokeColour, $font, $text, $stroke){
+	$res = imagettfbbox($size + $stroke, 0, $font, $text);
+	$textWidth = $res[2] - $res[0];
+	$textHeight = $res[1] - $res[7] + 2;
+
+	$img = imagecreatetruecolor($textWidth, $textHeight);
+	$black = imagecolorallocate($img, 0, 0, 0);
+
+	imagettfstroketext($img, $size, 0, 0, $textHeight - $stroke, $black, $strokeColour, $font, $text, $stroke);
+
+	imagecolortransparent($img, $black);
+	imagecopy($image, $img, $x, $y, 0, 0, $textWidth, $textHeight);
+
+	imagedestroy($img);
+
+	return [$textWidth - $stroke, $textHeight];
+}
+
+function alternatingTextStroke($image, $size, $x, $y, $width, $font, $text, $colour, $strokeColour, $stroke){
+	$outline = true;
+
+	while(true){
+		if($outline){
+			list($w, $h) = strokedOutline($image, $size, $x, $y, $strokeColour, $font, $text, $stroke);
+		} else {
+			$res = imagettfbbox($size, 0, $font, $text);
+			$w = $res[2] - $res[0];
+			
+			imagettftext($image, $size, 0, $x - 10, $y + $size + ($stroke / 2), $colour, $font, $text);
+		}
+
+		$x += $w;
+		$outline = !$outline;
+
+		if($x >= $width){
+			break;
+		}
+	}
+}
+
+function imagettfstroketext(&$image, $size, $angle, $x, $y, &$textcolor, &$strokecolor, $fontfile, $text, $px) {
+    for($c1 = ($x-abs($px)); $c1 <= ($x+abs($px)); $c1++){
+        for($c2 = ($y-abs($px)); $c2 <= ($y+abs($px)); $c2++){
+            imagettftext($image, $size, $angle, $c1, $c2, $strokecolor, $fontfile, $text);
+		}
+	}
+
+   return imagettftext($image, $size, $angle, $x, $y, $textcolor, $fontfile, $text);
+}
