@@ -6,7 +6,6 @@ define("TEMPLATE_PATH", __DIR__ . "/../lib/Template/");
 require_once("../lib/Utils.php");
 require_once("../lib/Config.php");
 
-
 $config = Config::load();
 $template = resolveTemplate($config);
 
