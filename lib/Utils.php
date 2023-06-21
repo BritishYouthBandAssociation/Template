@@ -102,8 +102,8 @@ function wrap($fontSize, $angle, $fontFace, $string, $width) {
 	return $ret;
 }
 
-function calculateFontSize($text, $font, $width, $height) {
-	$size = 100;
+function calculateFontSize($text, $font, $width, $height, $max = 100, $fitToOneLine = false) {
+	$size = $max;
 
 	while (true) {
 		$bounds = imagettfbbox($size, 0, $font, $text);
@@ -114,12 +114,19 @@ function calculateFontSize($text, $font, $width, $height) {
 			return $size;
 		}
 
-		$rows = ($height / $calcHeight) / 1.6;
-		if ($calcWidth / $rows <= $width) {
-			$actualRows = count(explode("\n", wrap($size, 0, $font, $text, $width)));
+		if (!$fitToOneLine) {
+			$rows = ($height / $calcHeight) / 1.6;
 
-			if ($actualRows <= $rows) {
-				return $size;
+			if ($calcWidth / $rows <= $width) {
+				$actualRows = 1;
+
+				if (!$fitToOneLine) {
+					$actualRows = count(explode("\n", wrap($size, 0, $font, $text, $width)));
+				}
+
+				if ($actualRows <= $rows) {
+					return $size;
+				}
 			}
 		}
 
@@ -127,9 +134,15 @@ function calculateFontSize($text, $font, $width, $height) {
 	}
 }
 
-function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100) {
-	$fontSize = calculateFontSize($text, $font, $width, $height);
-	$lines = explode("\n", wrap($fontSize, 0, $font, $text, $width));
+function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100, $fitToOneLine = false, $outlineColour = null) {
+	$fontSize = calculateFontSize($text, $font, $width, $height, $maxSize, $fitToOneLine);
+
+	if ($fitToOneLine) {
+		$lines = array($text);
+	} else {
+		$lines = explode("\n", wrap($fontSize, 0, $font, $text, $width));
+	}
+
 	$yOffset = $fontSize;
 
 	$expectedRows = $height / ($fontSize * 1.5);
@@ -147,6 +160,11 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
 		$centerY = 0;
 
 		imagettftext($image, $fontSize, 0, round($x + $centerX), round($y + $centerY + $yOffset), $colour, $font, $line);
+
+		if($outlineColour != null){
+			strokedOutline($image, $fontSize, round($x + $centerX), round($y + $centerY + $yOffset), $outlineColour, $font, $line, 4);
+		}
+
 		$yOffset += $textHeight * 1.5;
 	}
 }
@@ -239,52 +257,56 @@ function makeColourTransparent($image, $colour, $transparency) {
 	return imagecolorallocatealpha($image,  $rgb["red"], $rgb["green"], $rgb["blue"], 127 - $transparency);
 }
 
-function strokedOutline($image, $size, $x, $y, $strokeColour, $font, $text, $stroke){
+function strokedOutline($image, $size, $x, $y, $strokeColour, $font, $text, $stroke) {
 	$res = imagettfbbox($size + $stroke, 0, $font, $text);
 	$textWidth = $res[2] - $res[0];
 	$textHeight = $res[1] - $res[7] + 2;
 
-	$img = imagecreatetruecolor($textWidth, $textHeight);
+	$img = imagecreatetruecolor($textWidth + $stroke, $textHeight + $stroke);
 	$black = imagecolorallocate($img, 0, 0, 0);
 
-	imagettfstroketext($img, $size, 0, 0, $textHeight - $stroke, $black, $strokeColour, $font, $text, $stroke);
+	imagettfstroketext($img, $size, 0, 0, $textHeight - ($stroke / 2), $black, $strokeColour, $font, $text, $stroke);
 
 	imagecolortransparent($img, $black);
-	imagecopy($image, $img, $x, $y, 0, 0, $textWidth, $textHeight);
+	imagecopy($image, $img, $x, $y - $textHeight + ($stroke / 2), 0, 0, $textWidth + $stroke, $textHeight + $stroke);
+
+	/*header("Content-Type: image/png");
+	imagepng($img);
+	die();*/
 
 	imagedestroy($img);
 
 	return [$textWidth - $stroke, $textHeight];
 }
 
-function alternatingTextStroke($image, $size, $x, $y, $width, $font, $text, $colour, $strokeColour, $stroke){
+function alternatingTextStroke($image, $size, $x, $y, $width, $font, $text, $colour, $strokeColour, $stroke) {
 	$outline = true;
 
-	while(true){
-		if($outline){
+	while (true) {
+		if ($outline) {
 			list($w, $h) = strokedOutline($image, $size, $x, $y, $strokeColour, $font, $text, $stroke);
 		} else {
 			$res = imagettfbbox($size, 0, $font, $text);
 			$w = $res[2] - $res[0];
-			
+
 			imagettftext($image, $size, 0, $x - 10, $y + $size + ($stroke / 2), $colour, $font, $text);
 		}
 
 		$x += $w;
 		$outline = !$outline;
 
-		if($x >= $width){
+		if ($x >= $width) {
 			break;
 		}
 	}
 }
 
 function imagettfstroketext(&$image, $size, $angle, $x, $y, &$textcolor, &$strokecolor, $fontfile, $text, $px) {
-    for($c1 = ($x-abs($px)); $c1 <= ($x+abs($px)); $c1++){
-        for($c2 = ($y-abs($px)); $c2 <= ($y+abs($px)); $c2++){
-            imagettftext($image, $size, $angle, $c1, $c2, $strokecolor, $fontfile, $text);
+	for ($c1 = ($x - abs($px)); $c1 <= ($x + abs($px)); $c1++) {
+		for ($c2 = ($y - abs($px)); $c2 <= ($y + abs($px)); $c2++) {
+			imagettftext($image, $size, $angle, $c1, $c2, $strokecolor, $fontfile, $text);
 		}
 	}
 
-   return imagettftext($image, $size, $angle, $x, $y, $textcolor, $fontfile, $text);
+	return imagettftext($image, $size, $angle, $x, $y, $textcolor, $fontfile, $text);
 }
