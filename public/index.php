@@ -13,7 +13,13 @@ try{
 	$template->parseParams();
 	$template->render();
 } catch (Exception $e){
-	die("An error occurred whilst generating the requested template.");
+	$msg = "An error occurred whilst generating the requested template.";
+
+	if(defined("DEBUG") && DEBUG){
+		$msg .= "<br />" . $e;
+	}
+
+	die($msg);
 }
 
 $template->output($config);
