@@ -13,11 +13,14 @@ abstract class BaseTemplate {
 	protected $colours;
 	protected $fonts;
 
+	public $fileName;
+
 	const WIDTH = 0;
 	const HEIGHT = 0;
 
 	public function __construct($config) {
 		$this->config = $config;
+		$this->fileName = str_replace("Template", "", get_class($this));
 
 		//set up some defaults
 		$this->canvas = imagecreatetruecolor(static::WIDTH, static::HEIGHT);

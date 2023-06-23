@@ -46,6 +46,7 @@ function resolveTemplate($config){
 function output($template, $config){
 	$type = $config->outputType;
 	header("Content-Type: image/$type");
+	header("Content-Disposition: attachment; filename=\"$template->fileName.$type\"");
 
 	switch($type){
 		case "gif":
