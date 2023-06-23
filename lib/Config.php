@@ -5,6 +5,7 @@ require_once("WrapType.php");
 class Config{
 	public $wordwrapType;
 	public $wordwrapLength;
+	public $outputType;
 
 	public readonly string $fontDir;
 	public readonly string $imageDir;
@@ -34,6 +35,8 @@ class Config{
 		$config->wordwrapType = self::getWrapType();
 		$config->wordwrapLength = isset($_GET['wrapLength']) ? $_GET['wrapLength'] : 16;
 
+		$config->outputType = self::getOutputType();
+
 		return $config;
 	}
 
@@ -47,5 +50,16 @@ class Config{
 		}
 		
 		return WrapType::WRAPPED_ONLY;
+	}
+
+	private static function getOutputType(){
+		$allowedTypes = ["png", "jpeg", "gif", "bmp", "webp"];
+		$request = isset($_GET['outputFormat']) ? strtolower($_GET['outputFormat']) : "";
+
+		if(in_array($request, $allowedTypes)){
+			return $request;
+		}
+
+		return "png";
 	}
 }

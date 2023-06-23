@@ -16,8 +16,7 @@ try{
 	die("An error occurred whilst generating the requested template.");
 }
 
-header("Content-Type: image/png");
-imagepng($template->canvas);
+output($template, $config);
 
 function resolveTemplate($config){
 	if(!isset($_GET['template'])){
@@ -42,4 +41,22 @@ function resolveTemplate($config){
 
 	require_once(TEMPLATE_PATH . $fileName);
 	return new $className($config);
+}
+
+function output($template, $config){
+	$type = $config->outputType;
+	header("Content-Type: image/$type");
+
+	switch($type){
+		case "gif":
+			return imagegif($template->canvas);
+		case "jpeg":
+			return imagejpeg($template->canvas);
+		case "bmp":
+			return imagebmp($template->canvas);
+		case "webp":
+			return imagewebp($template->canvas);
+		default:
+			return imagepng($template->canvas);
+	}
 }
