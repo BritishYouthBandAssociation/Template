@@ -32,4 +32,8 @@ class PhotoPassTemplate extends BaseTemplate {
 		
 		writeCenteredTtfText($this->canvas, $this->fonts["title"], "PHOTOGRAPHY PASS", $this->colours["onPrimary"], self::PADDING, self::HEIGHT * 0.85, $textW, self::HEIGHT * 0.1);
 	}
+
+	protected function getFileName(){
+		return $this->params["photographer"] . " Photo Pass for " . $this->params["showName"];
+	}
 }

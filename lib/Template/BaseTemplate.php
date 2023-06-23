@@ -13,14 +13,11 @@ abstract class BaseTemplate {
 	protected $colours;
 	protected $fonts;
 
-	public $fileName;
-
 	const WIDTH = 0;
 	const HEIGHT = 0;
 
 	public function __construct($config) {
 		$this->config = $config;
-		$this->fileName = str_replace("Template", "", get_class($this));
 
 		//set up some defaults
 		$this->canvas = imagecreatetruecolor(static::WIDTH, static::HEIGHT);
@@ -63,6 +60,27 @@ abstract class BaseTemplate {
 		}
 	}
 
+	public function output($config){
+		$fileName = $this->getFileName();
+		$type = $config->outputType;
+
+		header("Content-Type: image/$type");
+		header("Content-Disposition: inline; filename=\"$fileName.$type\"");
+	
+		switch($type){
+			case "gif":
+				return imagegif($this->canvas);
+			case "jpeg":
+				return imagejpeg($this->canvas);
+			case "bmp":
+				return imagebmp($this->canvas);
+			case "webp":
+				return imagewebp($this->canvas);
+			default:
+				return imagepng($this->canvas);
+		}
+	}
+
 	protected function fillDefaultParams() {
 	}
 
@@ -84,6 +102,10 @@ abstract class BaseTemplate {
 		imagefilter($img, IMG_FILTER_COLORIZE, 0, 0, 0, 127 * $transparency);
 
 		return $img;
+	}
+
+	protected function getFileName(){
+		return str_replace("Template", "", get_class($this));
 	}
 
 	private function getImageParam($param, $isArray = false) {
