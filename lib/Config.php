@@ -29,10 +29,10 @@ class Config{
 		$this->fontDir = __DIR__ . "/../assets/font/";
 		$this->imageDir = __DIR__ . "/../assets/image/";
 
-		if(defined('DEBUG') && DEBUG){
-			$this->download = false;
+		if(isset($_GET['dl'])){
+			$this->download = $_GET['dl'] != 0;
 		} else {
-			$this->download = (!isset($_GET["dl"]) || $_GET['dl'] != 0); 
+			$this->download = !(defined('DEBUG') && DEBUG);
 		}
 	}
 

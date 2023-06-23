@@ -16,7 +16,7 @@ function loadImage($filePath) {
 		case 18:
 			return imageCreateFromWebp($filePath);
 		default:
-			return null;
+			throw new Exception("Unrecognised mime type $type for file $filePath");
 	}
 }
 
