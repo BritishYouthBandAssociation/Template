@@ -4,8 +4,8 @@ require_once("BaseTemplate.php");
 require_once(__DIR__ . "/../ResourceTypes.php");
 
 class ShowThumbnailTemplate extends BaseTemplate {
-	const WIDTH = 1080;
-	const HEIGHT = 720;
+	const WIDTH = 2160;
+	const HEIGHT = 1440;
 
 	protected $params = array(
 		"image" => ResourceTypes::IMAGE,
@@ -25,8 +25,8 @@ class ShowThumbnailTemplate extends BaseTemplate {
 
 		writeCenteredTtfText($this->canvas, $this->fonts["title"], strtoupper($this->params["title"]), $this->colours["onPrimary"], self::WIDTH * 0.1, self::HEIGHT * 0.35, self::WIDTH * 0.8, self::HEIGHT * 0.3, fitToOneLine: true, outlineColour: $this->colours["primary"]);
 
-		writeCenteredTtfText($this->canvas, $this->fonts["subtitle"], $this->params["show"], $this->colours["onPrimary"], self::WIDTH * 0.1, self::HEIGHT * 0.7, self::WIDTH * 0.4, self::HEIGHT * 0.03, fitToOneLine: true);
+		writeCenteredTtfText($this->canvas, $this->fonts["subtitle"], $this->params["show"], $this->colours["onPrimary"], self::WIDTH * 0.1, self::HEIGHT * 0.7, self::WIDTH * 0.4, self::HEIGHT * 0.05, fitToOneLine: true);
 
-		writeCenteredTtfText($this->canvas, $this->fonts["subtitle"], $this->params["date"], $this->colours["onPrimary"], self::WIDTH * 0.5, self::HEIGHT * 0.7, self::WIDTH * 0.4, self::HEIGHT * 0.03, fitToOneLine: true);
+		writeCenteredTtfText($this->canvas, $this->fonts["subtitle"], $this->params["date"], $this->colours["onPrimary"], self::WIDTH * 0.5, self::HEIGHT * 0.7, self::WIDTH * 0.4, self::HEIGHT * 0.05, fitToOneLine: true);
 	}
 }

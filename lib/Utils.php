@@ -134,7 +134,7 @@ function calculateFontSize($text, $font, $width, $height, $max = 100, $fitToOneL
 	}
 }
 
-function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 100, $fitToOneLine = false, $outlineColour = null) {
+function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 999, $fitToOneLine = false, $outlineColour = null) {
 	$fontSize = calculateFontSize($text, $font, $width, $height, $maxSize, $fitToOneLine);
 
 	if ($fitToOneLine) {
@@ -162,7 +162,7 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
 		imagettftext($image, $fontSize, 0, round($x + $centerX), round($y + $centerY + $yOffset), $colour, $font, $line);
 
 		if($outlineColour != null){
-			strokedOutline($image, $fontSize, round($x + $centerX), round($y + $centerY + $yOffset), $outlineColour, $font, $line, 4);
+			strokedOutline($image, $fontSize, round($x + $centerX), round($y + $centerY + $yOffset), $outlineColour, $font, $line, $fontSize / 25);
 		}
 
 		$yOffset += $textHeight * 1.5;
