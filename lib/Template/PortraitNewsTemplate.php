@@ -31,4 +31,8 @@ class PortraitNewsTemplate extends BaseTemplate {
 		$logo = $this->getImage("byba.png");
 		containImageInSpace($logo, $this->canvas, self::WIDTH * 0.4, self::HEIGHT * 0.85, self::WIDTH * 0.2, self::HEIGHT * 0.1);
 	}
+
+	protected function getFileName(){
+		return "Portrait News for " . $this->params["title"];
+	}
 }

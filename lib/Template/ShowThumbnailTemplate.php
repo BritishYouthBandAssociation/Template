@@ -29,4 +29,8 @@ class ShowThumbnailTemplate extends BaseTemplate {
 
 		writeCenteredTtfText($this->canvas, $this->fonts["subtitle"], $this->params["date"], $this->colours["onPrimary"], self::WIDTH * 0.5, self::HEIGHT * 0.7, self::WIDTH * 0.4, self::HEIGHT * 0.05, fitToOneLine: true);
 	}
+
+	protected function getFileName(){
+		return $this->params["title"] . " at " . $this->params["show"];
+	}
 }
