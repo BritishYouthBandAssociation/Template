@@ -64,8 +64,10 @@ abstract class BaseTemplate {
 		$fileName = $this->getFileName();
 		$type = $config->outputType;
 
+		$disposition = $config->download ? "attachment" : "inline";
+
 		header("Content-Type: image/$type");
-		header("Content-Disposition: inline; filename=\"$fileName.$type\"");
+		header("Content-Disposition: $disposition; filename=\"$fileName.$type\"");
 	
 		switch($type){
 			case "gif":

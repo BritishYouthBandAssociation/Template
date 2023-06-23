@@ -3,9 +3,10 @@
 require_once("WrapType.php");
 
 class Config{
-	public $wordwrapType;
-	public $wordwrapLength;
-	public $outputType;
+	public readonly WrapType $wordwrapType;
+	public readonly int $wordwrapLength;
+	public readonly string $outputType;
+	public readonly bool $download;
 
 	public readonly string $fontDir;
 	public readonly string $imageDir;
@@ -27,6 +28,12 @@ class Config{
 
 		$this->fontDir = __DIR__ . "/../assets/font/";
 		$this->imageDir = __DIR__ . "/../assets/image/";
+
+		if(defined('DEBUG') && DEBUG){
+			$this->download = false;
+		} else {
+			$this->download = (!isset($_GET["dl"]) || $_GET['dl'] != 0); 
+		}
 	}
 
 	public static function load(){
