@@ -8,7 +8,7 @@ class DatesCoverTemplate extends BaseTemplate {
 	const HEIGHT = 1216;
 
 	protected $params = array(
-		"bannerText" => ResourceTypes::STRING,
+		"bannerText" => [ResourceTypes::STRING, ResourceTypes::OPTIONAL],
 		"nextShow" => ResourceTypes::STRING,
 		"nextLocation" => ResourceTypes::STRING,
 		"nextDate" => ResourceTypes::STRING,
@@ -23,8 +23,11 @@ class DatesCoverTemplate extends BaseTemplate {
 
 	public function render(){
 		imagefill($this->canvas, 0, 0, $this->colours["primary"]);
-		alternatingTextStroke($this->canvas, 24, -20, 10, self::WIDTH, $this->fonts["title"], $this->params["bannerText"], $this->colours["light"], $this->colours["light"], 2);
-		alternatingTextStroke($this->canvas, 24, -350, self::HEIGHT - 34, self::WIDTH, $this->fonts["title"], $this->params["bannerText"], $this->colours["light"], $this->colours["light"], 2);
+
+		if($this->params["bannerText"] != null){
+			alternatingTextStroke($this->canvas, 24, -20, 44, self::WIDTH, $this->fonts["title"], $this->params["bannerText"], $this->colours["light"], $this->colours["light"], 2);
+			alternatingTextStroke($this->canvas, 24, -350, self::HEIGHT - 24, self::WIDTH, $this->fonts["title"], $this->params["bannerText"], $this->colours["light"], $this->colours["light"], 2);
+		}
 
 		$this->drawNextShow();
 		$this->drawDates();

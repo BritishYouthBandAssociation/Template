@@ -289,7 +289,7 @@ function alternatingTextStroke($image, $size, $x, $y, $width, $font, $text, $col
 			$res = imagettfbbox($size, 0, $font, $text);
 			$w = $res[2] - $res[0];
 
-			imagettftext($image, $size, 0, $x - 10, $y + $size + ($stroke / 2), $colour, $font, $text);
+			imagettftext($image, $size, 0, $x - 10, $y, $colour, $font, $text);
 		}
 
 		$x += $w;
