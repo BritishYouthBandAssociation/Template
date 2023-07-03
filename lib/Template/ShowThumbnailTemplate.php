@@ -4,8 +4,8 @@ require_once("BaseTemplate.php");
 require_once(__DIR__ . "/../ResourceTypes.php");
 
 class ShowThumbnailTemplate extends BaseTemplate {
-	const WIDTH = 2160;
-	const HEIGHT = 1440;
+	const WIDTH = 1920;
+	const HEIGHT = 1080;
 
 	protected $params = array(
 		"image" => ResourceTypes::IMAGE,
@@ -21,7 +21,7 @@ class ShowThumbnailTemplate extends BaseTemplate {
 		imagefilledrectangle($this->canvas, 0, 0, self::WIDTH, self::HEIGHT, $overlayCol);
 
 		$logo = $this->getImage("light logo.png");
-		containImageInSpace	($logo, $this->canvas, self::WIDTH * 0.4, self::HEIGHT * 0.1, self::WIDTH * 0.2, self::HEIGHT * 0.2);
+		containImageInSpace($logo, $this->canvas, self::WIDTH * 0.42, self::HEIGHT * 0.1, self::WIDTH * 0.2, self::HEIGHT * 0.2);
 
 		writeCenteredTtfText($this->canvas, $this->fonts["title"], strtoupper($this->params["title"]), $this->colours["onPrimary"], self::WIDTH * 0.1, self::HEIGHT * 0.35, self::WIDTH * 0.8, self::HEIGHT * 0.3, fitToOneLine: true, outlineColour: $this->colours["primary"]);
 
