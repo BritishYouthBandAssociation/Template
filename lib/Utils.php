@@ -134,7 +134,7 @@ function calculateFontSize($text, $font, $width, $height, $max = 100, $fitToOneL
 	}
 }
 
-function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 999, $fitToOneLine = false, $outlineColour = null) {
+function fitText($image, $font, $text, $colour, $x, $y, $width, $height, $alignment = Alignment::START, $maxSize = 999, $fitToOneLine = false, $outlineColour = null){
 	$fontSize = calculateFontSize($text, $font, $width, $height, $maxSize, $fitToOneLine);
 
 	if ($fitToOneLine) {
@@ -156,17 +156,26 @@ function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $he
 		$textWidth = $res[2] - $res[0];
 		$textHeight = $res[1] - $res[7];
 
-		$centerX = ($width / 2) - ($textWidth / 2);
+		if($alignment == Alignment::CENTER){
+			$centerX = ($width / 2) - ($textWidth / 2);	
+			$x = round($x + $centerX);
+		}
+		
 		$centerY = 0;
+		$y = round($y + $centerY + $yOffset);
 
-		imagettftext($image, $fontSize, 0, round($x + $centerX), round($y + $centerY + $yOffset), $colour, $font, $line);
+		imagettftext($image, $fontSize, 0, $x, $y, $colour, $font, $line);
 
 		if($outlineColour != null){
-			strokedOutline($image, $fontSize, round($x + $centerX), round($y + $centerY + $yOffset), $outlineColour, $font, $line, $fontSize / 25);
+			strokedOutline($image, $fontSize, $x, $y, $outlineColour, $font, $line, $fontSize / 25);
 		}
 
 		$yOffset += $textHeight * 1.5;
 	}
+}
+
+function writeCenteredTtfText($image, $font, $text, $colour, $x, $y, $width, $height, $maxSize = 999, $fitToOneLine = false, $outlineColour = null) {
+	fitText($image, $font, $text, $colour, $x, $y, $width, $height, Alignment::CENTER, $maxSize, $fitToOneLine, $outlineColour);
 }
 
 function calculateAlignment($alignment, $size, $canvasSize) {
