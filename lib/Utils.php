@@ -137,19 +137,20 @@ function calculateFontSize($text, $font, $width, $height, $max = 100, $fitToOneL
 function fitText($image, $font, $text, $colour, $x, $y, $width, $height, $alignment = Alignment::START, $maxSize = 999, $fitToOneLine = false, $outlineColour = null){
 	$fontSize = calculateFontSize($text, $font, $width, $height, $maxSize, $fitToOneLine);
 
+	$centerY = 0;
+	$yOffset = $fontSize;
 	if ($fitToOneLine) {
 		$lines = array($text);
 	} else {
 		$lines = explode("\n", wrap($fontSize, 0, $font, $text, $width));
+
+		$expectedRows = $height / ($fontSize * 1.5);
+		if ($expectedRows > count($lines)) {
+			$missingRows = $expectedRows - count($lines);
+			$yOffset += $missingRows * $fontSize;
+		}
 	}
 
-	$yOffset = $fontSize;
-
-	$expectedRows = $height / ($fontSize * 1.5);
-	if ($expectedRows > count($lines)) {
-		$missingRows = $expectedRows - count($lines);
-		$yOffset += $missingRows * $fontSize;
-	}
 
 	foreach ($lines as $line) {
 		$res = imagettfbbox($fontSize, 0, $font, $line);
@@ -159,10 +160,16 @@ function fitText($image, $font, $text, $colour, $x, $y, $width, $height, $alignm
 		if($alignment == Alignment::CENTER){
 			$centerX = ($width / 2) - ($textWidth / 2);	
 			$x = round($x + $centerX);
+
+			if($fitToOneLine){
+				$centerY = ($height / 2) - ($textHeight / 2);
+			}
 		}
 		
-		$centerY = 0;
 		$y = round($y + $centerY + $yOffset);
+		if($y < $fontSize){
+			$y = $fontSize;
+		}
 
 		imagettftext($image, $fontSize, 0, $x, $y, $colour, $font, $line);
 
@@ -240,6 +247,10 @@ function dbgRect($img, $top, $left, $right, $bottom) {
 	imagefilledrectangle($img, $top, $left, $right, $bottom, imagecolorallocatealpha($img, 255, 0, 0, 0.4));
 }
 
+function dbgSize($img, $x, $y, $w, $h){
+	imagefilledrectangle($img, $x, $y, $x + $w, $y + $h, imagecolorallocatealpha($img, 255, 0, 0, 0.4));
+}
+
 function toBool($val) {
 	if (strtolower($val) == "false") {
 		return false;
@@ -279,10 +290,6 @@ function strokedOutline($image, $size, $x, $y, $strokeColour, $font, $text, $str
 	imagecolortransparent($img, $black);
 	imagecopy($image, $img, $x, $y - $textHeight + ($stroke / 2), 0, 0, $textWidth + $stroke, $textHeight + $stroke);
 
-	/*header("Content-Type: image/png");
-	imagepng($img);
-	die();*/
-
 	imagedestroy($img);
 
 	return [$textWidth - $stroke, $textHeight];
@@ -318,4 +325,9 @@ function imagettfstroketext(&$image, $size, $angle, $x, $y, &$textcolor, &$strok
 	}
 
 	return imagettftext($image, $size, $angle, $x, $y, $textcolor, $fontfile, $text);
+}
+
+function antialiasPolygon(&$image, $points, $colour){
+	imagefilledpolygon($image, $points, $colour);
+	imagepolygon($image, $points, $colour);
 }

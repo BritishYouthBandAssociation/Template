@@ -21,6 +21,8 @@ abstract class BaseTemplate {
 
 		//set up some defaults
 		$this->canvas = imagecreatetruecolor(static::WIDTH, static::HEIGHT);
+		imageantialias($this->canvas, true);
+
 		$this->colours = array(
 			"primary" => hex2imageColour($this->config->colourPrimary, $this->canvas),
 			"onPrimary" => hex2imageColour($this->config->colourOnPrimary, $this->canvas),
@@ -79,7 +81,7 @@ abstract class BaseTemplate {
 			case "webp":
 				return imagewebp($this->canvas);
 			default:
-				return imagepng($this->canvas);
+				return imagepng($this->canvas, quality: 0);
 		}
 	}
 
