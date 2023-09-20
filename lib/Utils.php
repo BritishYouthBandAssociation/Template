@@ -134,7 +134,7 @@ function calculateFontSize($text, $font, $width, $height, $max = 100, $fitToOneL
 	}
 }
 
-function fitText($image, $font, $text, $colour, $x, $y, $width, $height, $alignment = Alignment::START, $maxSize = 999, $fitToOneLine = false, $outlineColour = null){
+function fitText($image, $font, $text, $colour, $x, $y, $width, $height, $alignment = Alignment::START, $maxSize = 999, $fitToOneLine = false, $outlineColour = null, $bgColour = null) {
 	$fontSize = calculateFontSize($text, $font, $width, $height, $maxSize, $fitToOneLine);
 
 	$centerY = 0;
@@ -151,30 +151,54 @@ function fitText($image, $font, $text, $colour, $x, $y, $width, $height, $alignm
 		}
 	}
 
+	$largestWidth = 0;
+	$largestHeight = 0;
+	$bgPadding = 0;
+	if ($alignment == Alignment::CENTER || $bgColour != null) {
+		foreach ($lines as $line) {
+			$res = imagettfbbox($fontSize, 0, $font, $line);
+			$textWidth = $res[2] - $res[0];
+			$bgPadding = ($res[2] - $textWidth) * 2;
+			$textHeight = $res[1] - $res[7];
+
+			if ($textWidth > $largestWidth) {
+				$largestWidth = $textWidth;
+			}
+
+			if ($textHeight > $largestHeight) {
+				$largestHeight = $textHeight;
+			}
+		}
+	}
+
+	if ($bgColour != null) {
+		imagefilledrectangle($image, $x, $y, $x + $largestWidth + $bgPadding, $y + $largestHeight + $bgPadding, $bgColour);
+	}
 
 	foreach ($lines as $line) {
 		$res = imagettfbbox($fontSize, 0, $font, $line);
 		$textWidth = $res[2] - $res[0];
 		$textHeight = $res[1] - $res[7];
+		$textX = $x;
 
-		if($alignment == Alignment::CENTER){
-			$centerX = ($width / 2) - ($textWidth / 2);	
-			$x = round($x + $centerX);
+		if ($alignment == Alignment::CENTER) {
+			$centerX = (($width / 2) - ($textWidth / 2));
+			$textX = round($x + $centerX);
 
-			if($fitToOneLine){
+			if ($fitToOneLine) {
 				$centerY = ($height / 2) - ($textHeight / 2);
 			}
 		}
-		
-		$y = round($y + $centerY + $yOffset);
-		if($y < $fontSize){
-			$y = $fontSize;
+
+		$textY = round($y + $centerY + $yOffset);
+		if ($textY < $fontSize) {
+			$textY = $fontSize;
 		}
 
-		imagettftext($image, $fontSize, 0, $x, $y, $colour, $font, $line);
+		imagettftext($image, $fontSize, 0, $textX, $textY, $colour, $font, $line);
 
-		if($outlineColour != null){
-			strokedOutline($image, $fontSize, $x, $y, $outlineColour, $font, $line, $fontSize / 25);
+		if ($outlineColour != null) {
+			strokedOutline($image, $fontSize, $textX, $textY, $outlineColour, $font, $line, $fontSize / 25);
 		}
 
 		$yOffset += $textHeight * 1.5;
@@ -243,11 +267,22 @@ function containImageInSpace($image, $canvas, $canvasX, $canvasY, $canvasW, $can
 	imagecopyresampled($canvas, $image, $canvasX, $canvasY, 0, 0, $canvasW, $canvasH, $w, $h);
 }
 
+$dbg_y = 10;
+function dbg($img, $text) {
+	if (defined("DEBUG") && DEBUG) {
+		global $dbg_y;
+
+		$colour = hex2imageColour(0xFF0000, $img);
+		imagettftext($img, 10, 0, 10, $dbg_y, $colour, __DIR__ . "/../assets/font/open-sans.ttf", $text);
+		$dbg_y += 12;
+	}
+}
+
 function dbgRect($img, $top, $left, $right, $bottom) {
 	imagefilledrectangle($img, $top, $left, $right, $bottom, imagecolorallocatealpha($img, 255, 0, 0, 0.4));
 }
 
-function dbgSize($img, $x, $y, $w, $h){
+function dbgSize($img, $x, $y, $w, $h) {
 	imagefilledrectangle($img, $x, $y, $x + $w, $y + $h, imagecolorallocatealpha($img, 255, 0, 0, 0.4));
 }
 
@@ -327,7 +362,7 @@ function imagettfstroketext(&$image, $size, $angle, $x, $y, &$textcolor, &$strok
 	return imagettftext($image, $size, $angle, $x, $y, $textcolor, $fontfile, $text);
 }
 
-function antialiasPolygon(&$image, $points, $colour){
+function antialiasPolygon(&$image, $points, $colour) {
 	imagefilledpolygon($image, $points, $colour);
 	imagepolygon($image, $points, $colour);
 }

@@ -68,6 +68,7 @@ abstract class BaseTemplate {
 
 		$disposition = $config->download ? "attachment" : "inline";
 
+		header("Cache-Control: no-store");
 		header("Content-Type: image/$type");
 		header("Content-Disposition: $disposition; filename=\"$fileName.$type\"");
 	
